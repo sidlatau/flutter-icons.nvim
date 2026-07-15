@@ -10,7 +10,8 @@ Works with both:
 - Flutter's built-in `Icons.*`.
 
 The icon is rendered as a real image (kitty graphics protocol) directly in
-blink.cmp's documentation window and in `K` hovers.
+blink.cmp's documentation window and in `K` hovers. Optionally, it can also draw
+the glyph **inline in your source code** next to every `Symbols.`/`Icons.` usage.
 
 ## Requirements
 
@@ -50,6 +51,7 @@ require("flutter-icons").setup({
   -- builtin_icons = true,   -- also render Icons.* (not just Symbols.*)
   -- color = nil,            -- "#rrggbb"; nil follows the Normal fg
   -- png_size = 64,          -- source PNG px (display is one text row)
+  -- code = { filetypes = { "dart" } }, -- auto-enable inline code decorations
 })
 
 -- register the completion-doc provider with blink
@@ -62,6 +64,17 @@ require("blink.cmp").setup({
 
 That's it — trigger completion on `Symbols.` / `Icons.` or hover a constant
 with `K`.
+
+### Inline decorations in code (opt-in)
+
+To draw the icon next to `Symbols.`/`Icons.` references in your Dart source, set
+`code.filetypes` to auto-enable per filetype, or toggle it per buffer:
+
+- `:FlutterIconsToggle` — toggle in the current buffer
+- `require("flutter-icons").toggle_code()` / `.enable_code()` / `.disable_code()`
+
+Only visible lines are decorated and placements refresh on edit/scroll. This is
+purely a visual overlay — your buffer text is never modified.
 
 ## How it works
 

@@ -101,7 +101,10 @@ end
 ---@param name string icon name (only used to build a readable cache key)
 ---@return string?
 function M.glyph(otf, codepoint, name)
-  local key = ("ic_%s_%s"):format(slug(name), slug(fg_color()))
+  -- include the font in the key so e.g. Icons.home and Symbols.home (different
+  -- fonts, same name) never collide
+  local font = vim.fn.fnamemodify(otf, ":t:r")
+  local key = ("ic_%s_%s_%s"):format(slug(font), slug(name), slug(fg_color()))
   if M.path(key) then
     return key
   end
