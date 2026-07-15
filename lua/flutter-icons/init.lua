@@ -24,23 +24,23 @@ function M.setup(opts)
     require("flutter-icons.blink").setup()
   end
 
-  -- auto-enable inline code decorations for Dart buffers
+  -- auto-enable inline in-source icons for Dart buffers
   if cfg.virtual_text then
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "dart",
       group = vim.api.nvim_create_augroup(
-        "flutter-icons.code.ft",
+        "flutter-icons.virtual_text.ft",
         { clear = true }
       ),
       callback = function(ev)
-        require("flutter-icons.code").enable(ev.buf)
+        require("flutter-icons.virtual_text").enable(ev.buf)
       end,
     })
   end
 
   vim.api.nvim_create_user_command("FlutterIconsToggle", function()
-    require("flutter-icons.code").toggle()
-  end, { desc = "Toggle inline Flutter icon decorations in this buffer" })
+    require("flutter-icons.virtual_text").toggle()
+  end, { desc = "Toggle inline Flutter icons in this buffer" })
 
   return M
 end
@@ -50,17 +50,17 @@ function M.transform_items(...)
   return require("flutter-icons.blink").transform_items(...)
 end
 
---- Inline code decorations control (see also `:FlutterIconsToggle`).
-function M.enable_code(buf)
-  require("flutter-icons.code").enable(buf)
+--- Inline in-source icon control (see also `:FlutterIconsToggle`).
+function M.enable_virtual_text(buf)
+  require("flutter-icons.virtual_text").enable(buf)
 end
 
-function M.disable_code(buf)
-  require("flutter-icons.code").disable(buf)
+function M.disable_virtual_text(buf)
+  require("flutter-icons.virtual_text").disable(buf)
 end
 
-function M.toggle_code(buf)
-  require("flutter-icons.code").toggle(buf)
+function M.toggle_virtual_text(buf)
+  require("flutter-icons.virtual_text").toggle(buf)
 end
 
 return M

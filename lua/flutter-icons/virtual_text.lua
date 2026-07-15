@@ -1,10 +1,10 @@
--- Inline icon decorations in source code: draws the real glyph next to each
+-- Inline virtual-text icons in source code: draws the real glyph next to each
 -- `Symbols.<name>` / `Icons.<name>` reference in a Dart buffer (opt-in).
 --
 -- Unlike the completion/hover surfaces this must not modify the buffer, so it
 -- resolves the icon by name (via pkg.lua / sdk.lua) and places a one-row inline
--- image directly at the reference with snacks' placement API. Only visible lines
--- are decorated, refreshed on edit and scroll.
+-- image directly at the reference with snacks' placement API. Placements are
+-- diffed on edit and left untouched on scroll (snacks redraws them itself).
 
 local render = require("flutter-icons.render")
 
@@ -137,7 +137,8 @@ local function ensure_autocmds()
   if augroup then
     return
   end
-  augroup = vim.api.nvim_create_augroup("flutter-icons.code", { clear = true })
+  augroup =
+    vim.api.nvim_create_augroup("flutter-icons.virtual_text", { clear = true })
   -- Only edits move reference positions; scrolling does not, so we re-sync on
   -- text change only. Snacks redraws existing placements on scroll itself.
   vim.api.nvim_create_autocmd(

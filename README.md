@@ -71,7 +71,8 @@ To draw the icon next to `Symbols.`/`Icons.` references in your Dart source, set
 `virtual_text = true` to auto-enable for Dart buffers, or toggle it per buffer:
 
 - `:FlutterIconsToggle` — toggle in the current buffer
-- `require("flutter-icons").toggle_code()` / `.enable_code()` / `.disable_code()`
+- `require("flutter-icons").toggle_virtual_text()` / `.enable_virtual_text()` /
+  `.disable_virtual_text()`
 
 Only visible lines are decorated and placements refresh on edit/scroll. This is
 purely a visual overlay — your buffer text is never modified.
