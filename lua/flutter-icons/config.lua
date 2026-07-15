@@ -19,7 +19,7 @@ local defaults = {
   -- Draw the icon inline next to `Symbols.`/`Icons.` usages in Dart source.
   -- Off by default; set true to auto-enable for Dart buffers, or leave false and
   -- toggle per buffer via `:FlutterIconsToggle`.
-  code = false,
+  virtual_text = false,
 }
 
 ---@type FlutterIcons.Config

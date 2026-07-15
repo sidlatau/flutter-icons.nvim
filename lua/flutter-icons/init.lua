@@ -25,7 +25,7 @@ function M.setup(opts)
   end
 
   -- auto-enable inline code decorations for Dart buffers
-  if cfg.code then
+  if cfg.virtual_text then
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "dart",
       group = vim.api.nvim_create_augroup(
