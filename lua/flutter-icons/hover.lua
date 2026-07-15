@@ -1,8 +1,8 @@
 -- LSP hover integration: wraps vim.lsp.util.open_floating_preview so a Flutter
 -- icon hover gets a marker injected and then rendered in the float.
 --
--- The wrapper chains whatever is already installed (e.g. a dotfiles wrapper that
--- adds borders), so it is safe to layer on top.
+-- The wrapper chains any existing override (e.g. one that adds borders), so it
+-- is safe to layer on top.
 
 local M = {}
 
