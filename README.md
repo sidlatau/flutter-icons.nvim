@@ -13,6 +13,20 @@ The icon is rendered as a real image (kitty graphics protocol) directly in
 blink.cmp's documentation window and in `K` hovers. Optionally, it can also draw
 the glyph **inline in your source code** next to every `Symbols.`/`Icons.` usage.
 
+## Demo
+
+Completion documentation:
+
+![completion documentation preview](media/completion.png)
+
+LSP hover (`K`):
+
+![hover preview](media/hover.png)
+
+Inline in code (`virtual_text`):
+
+![inline code decoration](media/code.png)
+
 ## Requirements
 
 - Neovim 0.10+
