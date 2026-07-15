@@ -31,13 +31,13 @@ blink.cmp's documentation window and in `K` hovers.
 With [vim.pack](https://neovim.io/doc/user/pack.html):
 
 ```lua
-vim.pack.add({ "https://github.com/shidlas/flutter-icons.nvim" })
+vim.pack.add({ "https://github.com/YOUR_GH_USER/flutter-icons.nvim" })
 ```
 
 or lazy.nvim:
 
 ```lua
-{ "shidlas/flutter-icons.nvim", dependencies = { "folke/snacks.nvim" } }
+{ "YOUR_GH_USER/flutter-icons.nvim", dependencies = { "folke/snacks.nvim" } }
 ```
 
 ## Setup
