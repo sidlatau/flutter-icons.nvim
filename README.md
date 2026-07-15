@@ -51,7 +51,7 @@ require("flutter-icons").setup({
   -- builtin_icons = true,   -- also render Icons.* (not just Symbols.*)
   -- color = nil,            -- "#rrggbb"; nil follows the Normal fg
   -- png_size = 64,          -- source PNG px (display is one text row)
-  -- code = { filetypes = { "dart" } }, -- auto-enable inline code decorations
+  -- code = true,            -- auto-enable inline code decorations in Dart buffers
 })
 
 -- register the completion-doc provider with blink
@@ -68,7 +68,7 @@ with `K`.
 ### Inline decorations in code (opt-in)
 
 To draw the icon next to `Symbols.`/`Icons.` references in your Dart source, set
-`code.filetypes` to auto-enable per filetype, or toggle it per buffer:
+`code = true` to auto-enable for Dart buffers, or toggle it per buffer:
 
 - `:FlutterIconsToggle` — toggle in the current buffer
 - `require("flutter-icons").toggle_code()` / `.enable_code()` / `.disable_code()`

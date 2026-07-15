@@ -24,10 +24,10 @@ function M.setup(opts)
     require("flutter-icons.blink").setup()
   end
 
-  -- auto-enable inline code decorations for the configured filetypes
-  if cfg.code and cfg.code.filetypes and #cfg.code.filetypes > 0 then
+  -- auto-enable inline code decorations for Dart buffers
+  if cfg.code then
     vim.api.nvim_create_autocmd("FileType", {
-      pattern = cfg.code.filetypes,
+      pattern = "dart",
       group = vim.api.nvim_create_augroup(
         "flutter-icons.code.ft",
         { clear = true }

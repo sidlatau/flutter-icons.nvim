@@ -16,12 +16,10 @@ local defaults = {
   -- Integrations to install from `setup()`.
   blink = true, -- register the blink.cmp documentation provider
   hover = true, -- wrap vim.lsp.util.open_floating_preview for LSP hovers
-  -- Inline decorations that draw the icon next to `Symbols.`/`Icons.` usages in
-  -- source code. Opt-in: list filetypes to auto-enable (e.g. { "dart" }), or
-  -- leave empty and toggle per buffer via `:FlutterIconsToggle`.
-  code = {
-    filetypes = {},
-  },
+  -- Draw the icon inline next to `Symbols.`/`Icons.` usages in Dart source.
+  -- Off by default; set true to auto-enable for Dart buffers, or leave false and
+  -- toggle per buffer via `:FlutterIconsToggle`.
+  code = false,
 }
 
 ---@type FlutterIcons.Config
