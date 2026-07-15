@@ -14,6 +14,7 @@ local CLASSES = { Symbols = "symbol", Icons = "builtin" }
 
 local enabled = {} -- bufnr -> true
 local timers = {} -- bufnr -> timer
+local active = {} -- bufnr -> { compositekey -> snacks placement }
 local augroup
 
 local function placement()
@@ -51,19 +52,19 @@ local function resolve(ref, buf)
   return require("flutter-icons.sdk").builtin(ref.name, buf)
 end
 
--- 1-indexed inclusive visible line ranges for every window showing the buffer
-local function visible_ranges(buf)
-  local ranges = {}
-  for _, win in ipairs(vim.fn.win_findbuf(buf)) do
-    local info = vim.fn.getwininfo(win)[1]
-    if info then
-      ranges[#ranges + 1] = { top = info.topline, bot = info.botline }
-    end
-  end
-  return ranges
+local function close(pl)
+  pcall(function()
+    pl:close()
+  end)
 end
 
---- Redraw icon placements for the buffer's visible lines.
+--- Sync icon placements with the buffer's `Symbols.`/`Icons.` references.
+---
+--- Placements are diffed against the currently active set (keyed by
+--- row:col:icon), so an unchanged reference keeps its existing placement rather
+--- than being torn down and recreated -- which is what caused flicker. Snacks
+--- redraws each placement itself on scroll/resize (`auto_resize`), so there is
+--- nothing to do on scroll.
 ---@param buf integer
 function M.render(buf)
   if not (enabled[buf] and vim.api.nvim_buf_is_valid(buf)) then
@@ -73,27 +74,54 @@ function M.render(buf)
   if not P then
     return
   end
-  P.clean(buf)
-  for _, r in ipairs(visible_ranges(buf)) do
-    local lines = vim.api.nvim_buf_get_lines(buf, r.top - 1, r.bot, false)
-    for idx, line in ipairs(lines) do
-      local row = r.top - 1 + idx
-      for _, ref in ipairs(M.detect(line)) do
-        local font, cp = resolve(ref, buf)
-        local key = font and cp and render.glyph(font, cp, ref.name)
-        local path = key and render.path(key)
-        if path then
-          pcall(P.new, buf, path, {
-            pos = { row, ref.col },
-            range = { row, ref.col, row, ref.col },
-            inline = true,
-            conceal = false, -- decorate, never hide the code
-            height = 1,
-          })
-        end
+  local current = active[buf] or {}
+  local desired = {} -- compositekey -> { row, col, path }
+
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  for row, line in ipairs(lines) do
+    for _, ref in ipairs(M.detect(line)) do
+      local font, cp = resolve(ref, buf)
+      local key = font and cp and render.glyph(font, cp, ref.name)
+      local path = key and render.path(key)
+      if path then
+        desired[row .. ":" .. ref.col .. ":" .. key] =
+          { row = row, col = ref.col, path = path }
       end
     end
   end
+
+  -- drop placements that are no longer wanted
+  for ck, pl in pairs(current) do
+    if not desired[ck] then
+      close(pl)
+      current[ck] = nil
+    end
+  end
+  -- add placements that are new
+  for ck, d in pairs(desired) do
+    if not current[ck] then
+      local ok, pl = pcall(P.new, buf, d.path, {
+        pos = { d.row, d.col },
+        range = { d.row, d.col, d.row, d.col },
+        inline = true,
+        conceal = false, -- decorate, never hide the code
+        height = 1,
+        auto_resize = true, -- let snacks redraw on scroll/resize
+      })
+      if ok then
+        current[ck] = pl
+      end
+    end
+  end
+
+  active[buf] = current
+end
+
+local function clear(buf)
+  for _, pl in pairs(active[buf] or {}) do
+    close(pl)
+  end
+  active[buf] = nil
 end
 
 local function schedule(buf)
@@ -110,6 +138,8 @@ local function ensure_autocmds()
     return
   end
   augroup = vim.api.nvim_create_augroup("flutter-icons.code", { clear = true })
+  -- Only edits move reference positions; scrolling does not, so we re-sync on
+  -- text change only. Snacks redraws existing placements on scroll itself.
   vim.api.nvim_create_autocmd(
     { "TextChanged", "TextChangedI", "InsertLeave" },
     {
@@ -121,16 +151,6 @@ local function ensure_autocmds()
       end,
     }
   )
-  vim.api.nvim_create_autocmd({ "WinScrolled", "WinResized" }, {
-    group = augroup,
-    callback = function()
-      for buf in pairs(enabled) do
-        if #vim.fn.win_findbuf(buf) > 0 then
-          schedule(buf)
-        end
-      end
-    end,
-  })
   vim.api.nvim_create_autocmd({ "BufWipeout", "BufDelete" }, {
     group = augroup,
     callback = function(ev)
@@ -139,6 +159,7 @@ local function ensure_autocmds()
         timers[ev.buf]:stop()
         timers[ev.buf] = nil
       end
+      clear(ev.buf)
     end,
   })
 end
@@ -161,10 +182,7 @@ function M.disable(buf)
     timers[buf]:stop()
     timers[buf] = nil
   end
-  local P = placement()
-  if P then
-    P.clean(buf)
-  end
+  clear(buf)
 end
 
 --- Toggle inline decorations for a buffer.
