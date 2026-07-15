@@ -116,6 +116,12 @@ function M.map(root)
   return map
 end
 
+--- Forget the cached package lookup + symbol table (e.g. after `pub get`).
+function M.clear_cache()
+  root_cache = {}
+  map_cache = {}
+end
+
 --- Resolve a `Symbols.<name>` to { font, codepoint } for a buffer.
 ---@param name string
 ---@param bufnr? integer

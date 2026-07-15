@@ -58,6 +58,11 @@ function M.icons(sdk)
   return cache[sdk]
 end
 
+--- Forget the cached SDK lookup + icon table (e.g. after switching fvm version).
+function M.clear_cache()
+  cache = {}
+end
+
 --- Resolve a built-in icon name to { otf, codepoint } for a buffer.
 ---@param name string
 ---@param bufnr? integer

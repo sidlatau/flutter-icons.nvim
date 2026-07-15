@@ -74,19 +74,29 @@ To draw the icon next to `Symbols.`/`Icons.` references in your Dart source, set
 - `require("flutter-icons").toggle_virtual_text()` / `.enable_virtual_text()` /
   `.disable_virtual_text()`
 
-Only visible lines are decorated and placements refresh on edit/scroll. This is
-purely a visual overlay — your buffer text is never modified.
+This is purely a visual overlay — your buffer text is never modified.
 
 ## How it works
 
 - **Completion / hover docs** carry the icon reference: `material_symbols_icons`
   embeds an SVG data-uri in each constant's dartdoc; built-in `Icons.*` expose a
   codepoint via `icons.dart`.
-- On the single item blink resolves (or on a hover), the icon is rasterised to a
-  cached PNG (`rsvg-convert` for SVGs, `magick -font` for glyphs) and a
-  `{{flicon:<key>}}` marker is injected into the documentation.
-- The marker is drawn as a one-row inline image using snacks' image placement
-  API.
+- The icon is rasterised **in the background** (`rsvg-convert` for SVGs,
+  `magick -font` for glyphs) to a cached PNG, and a `{{flicon:<key>}}` marker is
+  injected into the documentation; the marker is drawn as a one-row inline image
+  using snacks' image placement API once the render finishes.
+
+## Notes
+
+- Run `:checkhealth flutter-icons` to verify tools, the snacks backend and
+  terminal graphics support.
+- Rendering is async and cached on disk, so icons appear a moment after a doc/
+  buffer opens the first time, then instantly.
+- **Inline decorations** decorate the whole buffer (not just visible lines) so
+  scrolling never re-renders; a very large, icon-dense file therefore places all
+  its icons up front.
+- Flutter SDK / package lookups are cached per session. After switching fvm
+  version or running `flutter pub get`, call `require("flutter-icons").refresh()`.
 
 ## License
 

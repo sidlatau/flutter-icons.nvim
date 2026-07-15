@@ -50,6 +50,14 @@ function M.transform_items(...)
   return require("flutter-icons.blink").transform_items(...)
 end
 
+--- Drop cached SDK / package lookups and rendered-icon paths. Call after
+--- switching Flutter version (fvm) or running `flutter pub get` in a session.
+function M.refresh()
+  require("flutter-icons.sdk").clear_cache()
+  require("flutter-icons.pkg").clear_cache()
+  require("flutter-icons.render").clear_cache()
+end
+
 --- Inline in-source icon control (see also `:FlutterIconsToggle`).
 function M.enable_virtual_text(buf)
   require("flutter-icons.virtual_text").enable(buf)

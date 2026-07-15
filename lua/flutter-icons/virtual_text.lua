@@ -139,6 +139,14 @@ local function ensure_autocmds()
   end
   augroup =
     vim.api.nvim_create_augroup("flutter-icons.virtual_text", { clear = true })
+  -- background renders finish asynchronously; redraw so their icons appear
+  render.on_done(function()
+    for buf in pairs(enabled) do
+      if vim.api.nvim_buf_is_valid(buf) then
+        M.render(buf)
+      end
+    end
+  end)
   -- Only edits move reference positions; scrolling does not, so we re-sync on
   -- text change only. Snacks redraws existing placements on scroll itself.
   vim.api.nvim_create_autocmd(
